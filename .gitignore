@@ -1,15 +1,40 @@
+# Virtual Environment
 .venv/
+venv/
+
+# Python Cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-data/output/
-data/reports/
-
+# Database
 *.db
+*.sqlite3
 
-.idea/
-.vscode/
+# Generated Output Videos
+data/output/*.mp4
+data/output/*.avi
+data/output/*.mov
 
+# Generated Reports
+data/reports/*.csv
+data/reports/*.txt
+
+# Model Weights
 yolov8n.pt
+*.onnx
 
+# InsightFace Cache
 .insightface/
+
+# IDE Files
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

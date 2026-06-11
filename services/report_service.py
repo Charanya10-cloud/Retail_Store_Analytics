@@ -1,3 +1,5 @@
+import os
+import pandas as pd
 from datetime import datetime
 
 
@@ -10,35 +12,57 @@ class ReportService:
 
         self.db = db
 
-    def generate_report(
-        self
-    ):
+    def generate_report(self):
 
-        cursor = self.db.cursor
+        os.makedirs(
+            "data/reports",
+            exist_ok=True
+        )
 
-        report_name = (
+        timestamp = datetime.now().strftime(
+            "%Y%m%d_%H%M%S"
+        )
 
-            "data/output/report_"
+        # CSV REPORT
 
-            +
+        query = """
+        SELECT
+            person_id,
+            category,
+            gender,
+            age_group,
+            timestamp
+        FROM footfall_logs
+        """
 
-            datetime.now().strftime(
-                "%Y%m%d_%H%M%S"
-            )
+        df = pd.read_sql_query(
+            query,
+            self.db.conn
+        )
 
-            +
+        csv_file = (
+            f"data/reports/footfall_report_{timestamp}.csv"
+        )
 
-            ".txt"
+        df.to_csv(
+            csv_file,
+            index=False
+        )
+
+        print(
+            f"CSV Saved: {csv_file}"
+        )
+
+        # TXT SUMMARY REPORT
+
+        txt_file = (
+            f"data/reports/summary_{timestamp}.txt"
         )
 
         with open(
-
-            report_name,
-
+            txt_file,
             "w",
-
             encoding="utf-8"
-
         ) as report:
 
             report.write(
@@ -46,78 +70,78 @@ class ReportService:
             )
 
             report.write(
-                "=" * 40
+                "=" * 50
             )
 
             report.write(
                 "\n\n"
             )
 
-            cursor.execute(
-                """
-                SELECT category,
-                       COUNT(*)
-                FROM footfall_logs
-                GROUP BY category
-                """
+            report.write(
+                f"Total Records : {len(df)}\n\n"
             )
 
             report.write(
                 "CATEGORY COUNTS\n"
             )
 
-            for row in cursor.fetchall():
+            report.write(
+                "-" * 30 + "\n"
+            )
+
+            category_counts = (
+                df["category"]
+                .value_counts()
+            )
+
+            for category, count in category_counts.items():
 
                 report.write(
-                    f"{row[0]} : {row[1]}\n"
+                    f"{category}: {count}\n"
                 )
 
-            report.write(
-                "\n"
-            )
-
-            cursor.execute(
-                """
-                SELECT gender,
-                       COUNT(*)
-                FROM footfall_logs
-                GROUP BY gender
-                """
-            )
+            report.write("\n")
 
             report.write(
                 "GENDER COUNTS\n"
             )
 
-            for row in cursor.fetchall():
+            report.write(
+                "-" * 30 + "\n"
+            )
+
+            gender_counts = (
+                df["gender"]
+                .value_counts()
+            )
+
+            for gender, count in gender_counts.items():
 
                 report.write(
-                    f"{row[0]} : {row[1]}\n"
+                    f"{gender}: {count}\n"
                 )
 
-            report.write(
-                "\n"
-            )
-
-            cursor.execute(
-                """
-                SELECT age_group,
-                       COUNT(*)
-                FROM footfall_logs
-                GROUP BY age_group
-                """
-            )
+            report.write("\n")
 
             report.write(
                 "AGE GROUP COUNTS\n"
             )
 
-            for row in cursor.fetchall():
+            report.write(
+                "-" * 30 + "\n"
+            )
+
+            age_counts = (
+                df["age_group"]
+                .value_counts()
+            )
+
+            for age, count in age_counts.items():
 
                 report.write(
-                    f"{row[0]} : {row[1]}\n"
+                    f"{age}: {count}\n"
                 )
 
         print(
-            f"\nReport Saved: {report_name}"
+            f"TXT Saved: {txt_file}"
         )

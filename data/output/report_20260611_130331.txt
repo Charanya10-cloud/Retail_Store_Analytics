@@ -1,0 +1,15 @@
+FOOTFALL ANALYTICS REPORT
+========================================
+
+CATEGORY COUNTS
+Customer : 4
+Employee : 8
+
+GENDER COUNTS
+Female : 2
+Male : 2
+Unknown : 8
+
+AGE GROUP COUNTS
+Adult : 4
+Unknown : 8
